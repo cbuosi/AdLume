@@ -7,13 +7,15 @@ class Program
     static async Task Main()
     {
 
+        var exePath = AppContext.BaseDirectory;
+
         //var mpv = new MpvClient();
         //
         //// Linux: "/tmp/mpv-socket"
         //// Windows: ignora parametro e usa pipe interno
         //await mpv.ConnectAsync("/tmp/mpv-socket");
 
-        await MpvManager.RestartMpvAsync(@"C:\temp\x1\mpv\mpv.exe");
+        await MpvManager.RestartMpvAsync(Path.Combine(exePath, @"mpv\mpv.exe"));
         //                               @"C:\Users\CBuosi\Downloads\MPV-EASY Player V0.41.0.3\mpv\mpv.exe"
         //                                "C:\Users\CBuosi\Downloads\MPV-EASY Player V0.41.0.3\mpv\mpv.exe"
         //                                 C:\Users\CBuosi\Downloads\MPV-EASY Player V0.41.0.3\mpv\mvp.exe
@@ -30,15 +32,38 @@ class Program
 
         await mpv.PlaylistClear();
 
-        await mpv.LoadFile(@"C:\Videos\a1.mp4");        // inicia a playlist (replace)
-        await mpv.LoadFileAppend(@"C:\Videos\a2.mp4");
-        await mpv.LoadFileAppend(@"C:\Videos\a3.mp4");
-        await mpv.LoadFileAppend(@"C:\Videos\b1.mp4");
-        await mpv.LoadFileAppend(@"C:\Videos\b2.mp4");
-        await mpv.LoadFileAppend(@"C:\Videos\b3.mp4");
-        await mpv.LoadFileAppend(@"C:\Videos\b4.mp4");
-        await mpv.LoadFileAppend(@"C:\Videos\c1.mp4");
-        await mpv.LoadFileAppend(@"C:\Videos\c2.mp4");
+
+#if true
+        //await mpv.LoadFile(Path.Combine(exePath, @"Videos\video_manha_1.mp4.mp4"));        // inicia a playlist (replace)
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_1.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_2.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_3.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_a.mp4"));
+
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_1.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_2.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_3.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_b.mp4"));
+#endif
+
+#if false
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_tarde_1.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_tarde_2.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_a.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_tarde_1.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_tarde_2.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_b.mp4"));
+#endif
+
+#if false
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_noite_1.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_noite_2.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_a.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_noite_1.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_noite_2.mp4"));
+        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_b.mp4"));
+#endif
+
 
         await mpv.SetVolume(50);
         
