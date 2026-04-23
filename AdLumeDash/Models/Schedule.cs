@@ -7,7 +7,7 @@
         public Guid PlaylistId { get; set; }
         public TimeSpan Start { get; set; }
         public TimeSpan End { get; set; }
-        public string DaysOfWeek { get; set; } // "Mon,Tue,Wed"
+        public string? DaysOfWeek { get; set; } // "Mon,Tue,Wed"
     }
 
 }

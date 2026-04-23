@@ -1,9 +1,13 @@
-﻿namespace AdLumeDash.Models
+﻿using Dapper.Contrib.Extensions;
+
+namespace AdLumeDash.Models;
+
+[Table("tPlaylistItem")]
+public class PlaylistItem
 {
-    public class PlaylistItem
-    {
-        public Guid MediaId { get; set; }
-        public int Order { get; set; }
-        public int DurationSeconds { get; set; }
-    }
+    [Key] int cPlaylistItem { get; set; }
+    int cPlaylist { get; set; }
+    public int Ordem { get; set; }
+    public int cMidia { get; set; } // PK auto increment
+    public int cAtivo { get; set; }
 }

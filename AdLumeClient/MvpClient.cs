@@ -17,30 +17,50 @@ public class MpvClient : IDisposable
 
     public event Action<string>? OnEvent;
 
+
+    public MpvClient()
+    {
+            
+    }
+
     // =========================
     // 🔌 CONEXÃO
     // =========================
 
-    public async Task ConnectAsync(string address = "/tmp/mpv-socket", string pipeName = "mpv-pipe")
+    public async Task<bool> ConnectAsync(string address = "/tmp/mpv-socket", string pipeName = "mpv-pipe")
     {
-        if (OperatingSystem.IsWindows())
+
+        try
         {
-            var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
-            await pipe.ConnectAsync();
-            _stream = pipe;
+
+            if (OperatingSystem.IsWindows())
+            {
+                var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
+                await pipe.ConnectAsync();
+                _stream = pipe;
+            }
+            else
+            {
+                var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
+                var endpoint = new UnixDomainSocketEndPoint(address);
+                await socket.ConnectAsync(endpoint);
+                _stream = new NetworkStream(socket);
+            }
+
+            _reader = new StreamReader(_stream, Encoding.UTF8);
+            _writer = new StreamWriter(_stream, Encoding.UTF8) { AutoFlush = true };
+
+            _ = Task.Run(ReadLoop);
+
+            return true;
+
         }
-        else
+        catch (Exception)
         {
-            var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
-            var endpoint = new UnixDomainSocketEndPoint(address);
-            await socket.ConnectAsync(endpoint);
-            _stream = new NetworkStream(socket);
+
+            return false;
         }
 
-        _reader = new StreamReader(_stream, Encoding.UTF8);
-        _writer = new StreamWriter(_stream, Encoding.UTF8) { AutoFlush = true };
-
-        _ = Task.Run(ReadLoop);
 
     }
 
@@ -50,7 +70,7 @@ public class MpvClient : IDisposable
         {
             var line = await _reader!.ReadLineAsync();
             if (line == null)
-            { 
+            {
                 break;
             }
             OnEvent?.Invoke(line);

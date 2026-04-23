@@ -1,0 +1,9 @@
+ffmpeg -loop 1 -i video_manha_1.png -c:v libx264 -t 15 -pix_fmt yuv420p -vf "scale=1920:1080" video_manha_1.mp4 
+ffmpeg -loop 1 -i video_manha_2.png -c:v libx264 -t 15 -pix_fmt yuv420p -vf "scale=1920:1080" video_manha_2.mp4 
+ffmpeg -loop 1 -i video_manha_3.png -c:v libx264 -t 15 -pix_fmt yuv420p -vf "scale=1920:1080" video_manha_3.mp4 
+ffmpeg -loop 1 -i video_tarde_1.png -c:v libx264 -t 15 -pix_fmt yuv420p -vf "scale=1920:1080" video_tarde_1.mp4 
+ffmpeg -loop 1 -i video_tarde_2.png -c:v libx264 -t 15 -pix_fmt yuv420p -vf "scale=1920:1080" video_tarde_2.mp4 
+ffmpeg -loop 1 -i video_noite_1.png -c:v libx264 -t 15 -pix_fmt yuv420p -vf "scale=1920:1080" video_noite_1.mp4 
+ffmpeg -loop 1 -i video_noite_2.png -c:v libx264 -t 15 -pix_fmt yuv420p -vf "scale=1920:1080" video_noite_2.mp4 
+ffmpeg -loop 1 -i video_promo_a.png -c:v libx264 -t 15 -pix_fmt yuv420p -vf "scale=1920:1080" video_promo_a.mp4 
+ffmpeg -loop 1 -i video_promo_b.png -c:v libx264 -t 15 -pix_fmt yuv420p -vf "scale=1920:1080" video_promo_b.mp4 
