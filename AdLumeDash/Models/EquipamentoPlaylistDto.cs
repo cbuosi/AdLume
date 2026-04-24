@@ -15,6 +15,7 @@ public class EquipamentoPlaylistDto
     public int cPlaylist { get; set; }
     public string? NomePlaylist { get; set; }
     public string? HoraInicio { get; set; }
+    public string? HoraFim { get; set; }
 
     // --------------------------------------------------------------------
     // PlaylistItem

@@ -21,6 +21,7 @@ public class EquipamentoPlaylistDto
     public int cPlaylist { get; set; }
     public string? NomePlaylist { get; set; }
     public string? HoraInicio { get; set; }
+    public string? HoraFim { get; set; }
 
     // --------------------------------------------------------------------
     // PlaylistItem
@@ -35,4 +36,15 @@ public class EquipamentoPlaylistDto
     public string? HashMidia { get; set; }
     public string? UrlMidia { get; set; }
     // --------------------------------------------------------------------
+
+    public int MinIni()
+    {
+        return clsUtil.HoraParaInt(HoraInicio);
+    }
+
+    public int MinFin()
+    {
+        return clsUtil.HoraParaInt(HoraFim);
+    }
+
 }

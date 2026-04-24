@@ -1,7 +1,9 @@
-﻿using AdLumeClient.Models;
+﻿using AdLumeClient;
+using AdLumeClient.Models;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using System;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -12,8 +14,12 @@ using static System.Net.WebRequestMethods;
 class Program
 {
 
-    static IEnumerable<EquipamentoPlaylistDto>? oEquipamentoPlaylistDto;
+    static string strArqPlaylist = "Playlist.json";
+    static List<EquipamentoPlaylistDto>? oEquipamentoPlaylistDto;
     static string hashAtual = "x";
+    static string deviceId = "";
+    static string serverUrl = "";
+    static int SyncIntervalSeconds;
 
     //static int _currentVersion = -1;
     static HttpClient _http = new HttpClient();
@@ -22,77 +28,90 @@ class Program
     {
 
         bool bRet;
-        string exePath;
-        string mvpPath;
-        MpvClient mpv;
-        //Config config;
+        bool bInternet;
+        bool bForcaAtualiza = true;
+        Process[] processes;
+
+        MpvClient oMpv;
         ConfigurationRoot oConfig;
-        string deviceId;
-        string serverUrl;
-        int SyncIntervalSeconds;
 
         try
         {
+
             IniciaSerilog();
             Log.Information("Sistema iniciado");
 
             oConfig = (ConfigurationRoot)new ConfigurationBuilder()
-                          .SetBasePath(AppContext.BaseDirectory)
-                          .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                          .Build();
+                      .SetBasePath(AppContext.BaseDirectory)
+                      .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                      .Build();
 
             deviceId = oConfig["App:DeviceId"]!;
-            serverUrl = oConfig["App:ServerUrl"]!;
-            SyncIntervalSeconds = int.Parse(oConfig["App:SyncIntervalSeconds"]!);
-
             Log.Information($"Dispositivo.....: {deviceId}");
+
+            serverUrl = oConfig["App:ServerUrl"]!;
             Log.Information($"Servidor Config.: {serverUrl}");
+
+            SyncIntervalSeconds = int.Parse(oConfig["App:SyncIntervalSeconds"]!);
             Log.Information($"Intervalo Atu...: {SyncIntervalSeconds}");
 
-            exePath = AppContext.BaseDirectory;
-            Log.Information($"Rodando em: {exePath}");
+            bInternet = await InternetCheck.TemInternetAsync();
+            Log.Information($"Internet........: {(bInternet ? "SIM" : "NÃO")}");
 
+            //Primeira vez, sempre reinicia MPV
+            oMpv = await ReiniciaMPV();
 
-            mvpPath = Path.Combine(exePath, @"mpv\mpv.exe");
-            if (!System.IO.File.Exists(mvpPath))
+            if (oMpv == null)
             {
-                Log.Information($"MVP não encontrado em: {mvpPath}");
+                Log.Information($"Erro MPV (1)");
                 return;
             }
-
-
-            bRet = await MpvManager.RestartMpvAsync(mvpPath);
-            if (!bRet)
-            {
-                Log.Information($"Erro ao matar ou iniciar MVP.");
-                return;
-            }
-
-            mpv = new MpvClient();
-
-            await mpv.ConnectAsync(); // Linux: /tmp/mpv-socket
-
-            mpv.OnEvent += HandleMpvEvent;
 
             while (true)
             {
-                //
-                oEquipamentoPlaylistDto = await ObterPlaylistEquip(deviceId);
-               
 
+                //
+                //se MPV foi fechado, reinicia...
+                processes = Process.GetProcessesByName("mpv");
+                if (processes.Count() == 0)
+                {
+                    oMpv = await ReiniciaMPV();
+                    bForcaAtualiza = true;
+                    if (oMpv == null)
+                    {
+                        Log.Information($"Erro MPV (1)");
+                        return;
+                    }
+                }
+                //
+
+                oEquipamentoPlaylistDto = await ObterPlaylistEquip(deviceId);
                 //config = await GetConfig();
-                ////
-                if (hashAtual != GetObjectHash(oEquipamentoPlaylistDto!))
+                //
+                if (hashAtual != GetObjectHash(oEquipamentoPlaylistDto!) || bForcaAtualiza)
                 {
 
+                    bForcaAtualiza = false;
                     Log.Information("Nova configuração detectada!");
-                    await SyncMedia(oEquipamentoPlaylistDto);
-                    await UpdatePlayer(mpv, oEquipamentoPlaylistDto);
 
-                    await mpv.SetVolume(50);
-                    await mpv.LoopPlaylist();
-                    await mpv.SetPause(false);
-                    await mpv.SetFullscreen(true);
+                    bRet = await SyncMedia(oEquipamentoPlaylistDto);
+                    if (!bRet)
+                    {
+                        Log.Information($"Erro ao sincronizar midias.");
+                        return;
+                    }
+
+                    bRet = await UpdatePlayer(oMpv!, oEquipamentoPlaylistDto);
+                    if (!bRet)
+                    {
+                        Log.Information($"Erro MPV (1)");
+                        return;
+                    }
+
+                    await oMpv!.SetVolume(50);
+                    await oMpv!.LoopPlaylist();
+                    await oMpv!.SetPause(false);
+                    await oMpv!.SetFullscreen(true);
                     hashAtual = GetObjectHash(oEquipamentoPlaylistDto!);
 
                 }
@@ -106,83 +125,70 @@ class Program
 
             }
 
-
-
-            /////////////            //var mpv = new MpvClient();
-            /////////////            //
-            /////////////            //// Linux: "/tmp/mpv-socket"
-            /////////////            //// Windows: ignora parametro e usa pipe interno
-            /////////////            //await mpv.ConnectAsync("/tmp/mpv-socket");
-            /////////////
-            /////////////            await MpvManager.RestartMpvAsync(Path.Combine(exePath, @"mpv\mpv.exe"));
-            /////////////            //                               @"C:\Users\CBuosi\Downloads\MPV-EASY Player V0.41.0.3\mpv\mpv.exe"
-            /////////////            //                                "C:\Users\CBuosi\Downloads\MPV-EASY Player V0.41.0.3\mpv\mpv.exe"
-            /////////////            //                                 C:\Users\CBuosi\Downloads\MPV-EASY Player V0.41.0.3\mpv\mvp.exe
-            /////////////            //                                 C:\Users\CBuosi\Downloads\MPV-EASY Player V0.41.0.3\mpv
-            /////////////
-            /////////////            Console.WriteLine("Conectado ao MPV");
-            /////////////
-            /////////////            // Tocar vídeo
-            /////////////            var mpv = new MpvClient();
-            /////////////
-            /////////////            //mpv.OnEvent += e => Console.WriteLine($"EVENTx: {e}");
-            /////////////            mpv.OnEvent += HandleMpvEvent;
-            /////////////
-            /////////////            await mpv.ConnectAsync(); // Linux: /tmp/mpv-socket
-            /////////////
-            /////////////
-            /////////////            await mpv.PlaylistClear();
-            /////////////
-            /////////////
-            /////////////#if false
-            /////////////        //await mpv.LoadFile(Path.Combine(exePath, @"Videos\video_manha_1.mp4.mp4"));        // inicia a playlist (replace)
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_1.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_2.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_3.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_a.mp4"));
-            /////////////
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_1.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_2.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_manha_3.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_b.mp4"));
-            /////////////#endif
-            /////////////
-            /////////////#if true
-            /////////////            await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_tarde_1.mp4"));
-            /////////////            await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_tarde_2.mp4"));
-            /////////////            await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_a.mp4"));
-            /////////////            await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_tarde_1.mp4"));
-            /////////////            await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_tarde_2.mp4"));
-            /////////////            await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_b.mp4"));
-            /////////////#endif
-            /////////////
-            /////////////#if false
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_noite_1.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_noite_2.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_a.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_noite_1.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_noite_2.mp4"));
-            /////////////        await mpv.LoadFileAppend(Path.Combine(exePath, @"Videos\video_promo_b.mp4"));
-            /////////////#endif
-            /////////////
-            /////////////
-            /////////////            await mpv.SetVolume(50);
-            /////////////
-            /////////////            await mpv.LoopPlaylist();
-            /////////////            await mpv.SetPause(false);
-            /////////////            await mpv.SetFullscreen(true);
-            /////////////            Console.ReadLine();
-
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Erro ao executar MPV");
         }
+        finally
+        {
+            Log.Information("Fim execução!");
+        }
+
+    }
+
+    private static async Task<MpvClient> ReiniciaMPV()
+    {
+        string exePath;
+        string mpvPath;
+        bool bRet;
+        MpvClient _oMpv;
+
+        try
+        {
+
+            exePath = AppContext.BaseDirectory;
+            Log.Information($"Rodando em: {exePath}");
+
+            mpvPath = Path.Combine(exePath, @"mpv");
+            bRet = await MpvManager.VerificaInstalaMpv(mpvPath);
+            if (!bRet)
+            {
+                Log.Information($"Erro ao encontrar MVP.");
+                return null;
+            }
+
+            mpvPath = Path.Combine(exePath, @"mpv\mpv.exe");
+            bRet = await MpvManager.RestartMpvAsync(mpvPath);
+            if (!bRet)
+            {
+                Log.Information($"Erro ao matar ou iniciar MPV.");
+                return null;
+            }
+
+            _oMpv = new MpvClient();
+
+            await _oMpv.ConnectAsync(); // Linux: /tmp/mpv-socket
+
+            Log.Information($"Acoplando eventos MPV");
+            _oMpv.OnEvent += HandleMpvEvent;
+
+
+            return _oMpv;
+
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Erro em xxxxxxxxxxxxxxxxx");
+            return null;
+        }
+
 
     }
 
     private static void IniciaSerilog()
     {
+
         try
         {
 
@@ -208,39 +214,73 @@ class Program
     }
 
     // -----------------------------
-
-    internal static async Task<IEnumerable<EquipamentoPlaylistDto>?> ObterPlaylistEquip(string deviceId)
+    static internal async Task<List<EquipamentoPlaylistDto>?> ObterPlaylistEquip(string deviceId)
     {
+
+        string arq;
         string url;
-        string json;
-        IEnumerable<EquipamentoPlaylistDto> ret;
+        string json = "[]";
+        List<EquipamentoPlaylistDto> ret;
+        List<EquipamentoPlaylistDto> ret2;
+        int HorarioAtual;
+        bool bInternet;
 
         try
         {
 
-            // "http://localhost:5080/device/SEU_GUID/config";
-            url = $"http://localhost:5080/equipamento/{deviceId}";
+            arq = Path.Combine(AppContext.BaseDirectory, strArqPlaylist);
 
-            json = await _http.GetStringAsync(url);
-
-            if (json == null)
+            bInternet = await InternetCheck.TemInternetAsync();
+            if (bInternet)
             {
-                return null;
+                // ------------------------------------------------------------------------------
+                Log.Information("Obtendo parametros Equipamento (Horarios/Videos)");
+                //"http://localhost:5080/device/SEU_GUID/config";
+                url = $"{serverUrl}/equipamento/{deviceId}";
+                json = await _http.GetStringAsync(url);
+                if (System.IO.File.Exists(arq))
+                {
+                    System.IO.File.Delete(arq);
+                }
+                System.IO.File.WriteAllText(arq, json);
+                // ------------------------------------------------------------------------------
+            }
+            else
+            {
+                //verifica cache...
+                if (System.IO.File.Exists(arq))
+                {
+                    json = System.IO.File.ReadAllText(arq);
+                }
             }
 
-            ret = JsonSerializer.Deserialize<IEnumerable<EquipamentoPlaylistDto>>(json, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            })!;
+            ret = JsonSerializer.Deserialize<List<EquipamentoPlaylistDto>>
+                (json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })!;
 
-            return ret;
+
+            HorarioAtual = clsUtil.HoraParaInt(DateTime.Now.ToString("HH:mm"));
+
+            ret2 = new List<EquipamentoPlaylistDto>();
+
+            //- 14:00 < 15:23 < 18:00
+            foreach (EquipamentoPlaylistDto item in ret)
+            {
+                if ((item.MinIni() < HorarioAtual) && (HorarioAtual < item.MinFin()))
+                {
+                    ret2.Add(item);                    
+                }
+            }
+
+            return ret2;
 
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Erro em ObterPlaylistEquip");
-            throw new Exception("Erro em ObterPlaylistEquip");
+            //throw new Exception("Erro em ObterPlaylistEquip");
+            return null;
         }
+
     }
 
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.IO;
 using System.IO.Pipes;
 using System.Net.Sockets;
@@ -35,12 +36,14 @@ public class MpvClient : IDisposable
 
             if (OperatingSystem.IsWindows())
             {
+                Log.Information($"Conectando pipe MPV (Windows)");
                 var pipe = new NamedPipeClientStream(".", pipeName, PipeDirection.InOut, PipeOptions.Asynchronous);
                 await pipe.ConnectAsync();
                 _stream = pipe;
             }
             else
             {
+                Log.Information($"Conectando pipe MPV (Linux)");
                 var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
                 var endpoint = new UnixDomainSocketEndPoint(address);
                 await socket.ConnectAsync(endpoint);
@@ -55,9 +58,9 @@ public class MpvClient : IDisposable
             return true;
 
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-
+            Log.Error(ex, $"ConnectAsync erro!");
             return false;
         }
 

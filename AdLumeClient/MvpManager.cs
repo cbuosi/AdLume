@@ -16,6 +16,7 @@ public static class MpvManager
     {
         try
         {
+            Log.Information("Reiniciando Mpv");
             KillExistingInstances();
             await Task.Delay(500); // pequeno delay para liberar recursos
             StartNewInstance(mpvPath);
@@ -23,22 +24,41 @@ public static class MpvManager
         }
         catch (Exception ex)
         {
-            Log.Information(ex, $"Erro ao matar ou iniciar MVP.");
+            Log.Information(ex, $"Erro ao matar ou iniciar MPV.");
             return false;
         }
+
+    }
+
+    internal static async Task<bool> VerificaInstalaMpv(string mpvPath)
+    {
+
+        Log.Information("Verifica Instalação Mpv");
+
+        mpvPath = Path.Combine(mpvPath, @"mpv.exe");
+        if (!System.IO.File.Exists(mpvPath))
+        {
+            Log.Information($"MPV não encontrado em: {mpvPath}");
+            return false;
+        }
+
+        return true;
 
     }
 
     private static void KillExistingInstances()
     {
 
-        Log.Information($"Matando instancias anteriores de mvp.");
+        try
+        {
 
-        var processes = Process.GetProcessesByName(ProcessName);
+        Log.Information($"Matando instancias anteriores de MPV.");
+
+        Process[] processes = Process.GetProcessesByName(ProcessName);
 
         if (processes.Count() == 0)
         {
-            Log.Information($"Sem processo mvp ativo.");
+            Log.Information($"Sem processo MPV ativo.");
             return;
         }
 
@@ -56,13 +76,20 @@ public static class MpvManager
             }
         }
 
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex,$"Erro em KillExistingInstances");
+            throw;
+        }
+
     }
 
     private static void StartNewInstance(string mpvPath)
     {
         const string args = @"--input-ipc-server=\\.\pipe\mpv-pipe --idle=yes --force-window=yes";
 
-        Log.Information($"Iniciando mvp.");
+        Log.Information($"Iniciando MPV.");
 
         if (!File.Exists(mpvPath))
         {
@@ -87,24 +114,5 @@ public static class MpvManager
         Log.Information($"mpv iniciado PID={process.Id}");
 
     }
-
-    //private static void StartNewInstance(string mpvPath)
-    //{
-    //    var args = $"--input-ipc-server={PipeName} --idle=yes --force-window=yes";
-    //
-    //    var startInfo = new ProcessStartInfo
-    //    {
-    //        FileName = mpvPath,
-    //        Arguments = args,
-    //        UseShellExecute = false,
-    //        CreateNoWindow = false
-    //    };
-    //
-    //    var process = Process.Start(startInfo);
-    //
-    //    if (process == null)
-    //        throw new Exception("Falha ao iniciar mpv");
-    //
-    //    Console.WriteLine($"mpv iniciado PID={process.Id}");
-    //}
+ 
 }
