@@ -17,6 +17,7 @@ public class InternetCheck
             var response = await client.GetAsync("https://www.google.com");
 
             return response.IsSuccessStatusCode;
+
         }
         catch
         {

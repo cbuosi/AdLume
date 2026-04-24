@@ -1,0 +1,1 @@
+scp -r C:\Users\CBuosi\source\repos\AdLume\AdLumeClient\bin\Release\net8.0\linux-arm64\publish\* cbuosi@192.168.0.104:/home/cbuosi/AdLume

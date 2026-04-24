@@ -1,4 +1,5 @@
 ﻿using AdLumeClient.Classes;
+using AdLumeClient.Classes.mpv;
 using AdLumeClient.Models;
 using Microsoft.Extensions.Configuration;
 using Serilog;
@@ -16,9 +17,10 @@ static class Program
     static List<EquipamentoPlaylistDto>? oEquipPlaylistDto;
     static List<EquipamentoPlaylistDto>? oEquipPlaylistHorarioAtual;
 
-    static string hashAtual = "x";
+    static string hashAtual = "";
     static string deviceId = "";
     static string serverUrl = "";
+    static string mpvAppPath = "";
     static int SyncIntervalSeconds;
 
     static IMpvManager mpvManager = MpvManagerFactory.Create();
@@ -47,6 +49,7 @@ static class Program
             Log.Information($"##################################################");
             Log.Information($"");
 
+
             SystemInfo.PrintLogoAdLume();
 
             SystemInfo.PrintSummary();
@@ -61,33 +64,35 @@ static class Program
 
 
             Log.Information($"------------------------------");
-            Log.Information($"- RESUMO CONFIGURAÇÃO        -");
+            Log.Information($"\x1b[32m- RESUMO CONFIGURAÇÃO        -");
             Log.Information($"------------------------------");
 
             // 🔹 Sistema Operacional
-
+            oConfig = (ConfigurationRoot)new ConfigurationBuilder()
+                .SetBasePath(AppContext.BaseDirectory)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
 
             Log.Information($"Sistema Operacional....: {Environment.OSVersion.VersionString} - {Environment.OSVersion.Platform} - {Environment.OSVersion.Version.ToString()}");
 
             if (OperatingSystem.IsWindows())
             {
                 Log.Information("SO Detectado...........: Windows");
+                mpvAppPath = oConfig["App:pathMPV_Win"]!;
             }
             else if (OperatingSystem.IsLinux())
             {
                 Log.Information("SO Detectado...........: Linux");
+                mpvAppPath = oConfig["App:pathMPV_Linux"]!;
             }
             else
             {
                 Log.Information("SO Detectado...........: ????");
+                mpvAppPath = "";
             }
 
             Log.Information($"Caminho app............: {AppContext.BaseDirectory}");
 
-            oConfig = (ConfigurationRoot)new ConfigurationBuilder()
-                .SetBasePath(AppContext.BaseDirectory)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .Build();
 
             deviceId = oConfig["App:DeviceId"]!;
             serverUrl = oConfig["App:ServerUrl"]!;
@@ -100,6 +105,7 @@ static class Program
             Log.Information($"Servidor Config........: {serverUrl}");
             Log.Information($"Intervalo Atualização..: {SyncIntervalSeconds}");
             Log.Information($"Internet...............: {(bInternet ? "SIM" : "NÃO")}");
+            Log.Information($"Caminho MPV (Player)...: {mpvAppPath}");
 
             var ok = await ReiniciaMPV();
             if (!ok)
@@ -110,6 +116,7 @@ static class Program
 
             while (true)
             {
+
                 processes = Process.GetProcessesByName("mpv");
                 if (processes.Length == 0)
                 {
@@ -220,17 +227,18 @@ static class Program
     {
         try
         {
-            Log.Information($"----- ReiniciaMPV -----");
-            var basePath = AppContext.BaseDirectory;
-            var mpvFolder = Path.Combine(basePath, "mpv");
 
-            if (!await mpvManager.IsInstalledAsync(mpvFolder))
+            Log.Information($"----- ReiniciaMPV Inicio -----");
+            //var basePath = AppContext.BaseDirectory;
+            //var mpvFolder = Path.Combine(basePath, "mpv");
+
+            if (!await mpvManager.IsInstalledAsync(mpvAppPath))
             {
                 Log.Information($"IsInstalledAsync erro!");
                 return false;
             }
 
-            if (!await mpvManager.RestartAsync(mpvFolder))
+            if (!await mpvManager.RestartAsync(mpvAppPath))
             {
                 Log.Information($"RestartAsync erro!");
                 return false;
@@ -238,6 +246,8 @@ static class Program
 
             await Task.Delay(300);
             await mpvClient.ConnectAsync(mpvManager.GetIpcEndpoint());
+
+            Log.Information($"----- ReiniciaMPV Fim -----");
 
             return true;
         }
@@ -306,12 +316,14 @@ static class Program
                 //var url = string.Format(media.NomeMidia!, "https", "localhost", "7246");
                 var url = $"{serverUrl}/media/{media.NomeMidia}";
 
+
                 var bytes = await _http!.GetByteArrayAsync(url);
                 if (bytes.Length > 0)
                 {
                     Log.Information($"Salvando nova midia: {media.HashMidia}.mp4 - Tam: {bytes.Length.ToString("N0")} bytes");
                     await File.WriteAllBytesAsync(filePath, bytes);
                 }
+
 
             }
 
@@ -450,4 +462,5 @@ static class Program
         return true; // DEV
 
     }
+
 }
