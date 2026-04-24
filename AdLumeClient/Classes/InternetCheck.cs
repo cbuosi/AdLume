@@ -1,4 +1,6 @@
-﻿namespace AdLumeClient;
+﻿using Serilog;
+
+namespace AdLumeClient.Classes;
 
 public class InternetCheck
 {
@@ -6,10 +8,14 @@ public class InternetCheck
     {
         try
         {
+
+            //Log.Information("TemInternetAsync");
+
             using var client = new HttpClient();
             client.Timeout = TimeSpan.FromSeconds(5);
 
             var response = await client.GetAsync("https://www.google.com");
+
             return response.IsSuccessStatusCode;
         }
         catch

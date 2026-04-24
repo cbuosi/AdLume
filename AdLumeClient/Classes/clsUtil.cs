@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AdLumeClient
+namespace AdLumeClient.Classes
 {
     public static class clsUtil
     {
