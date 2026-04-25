@@ -79,8 +79,7 @@ public class MpvManager_Linux : IMpvManager
             //    Arguments = $"--idle=yes --no-terminal --input-ipc-server={SocketPath}",
             //    UseShellExecute = false
             //});
-
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(5000);
 
             return true;
 
@@ -115,6 +114,11 @@ public class MpvManager_Linux : IMpvManager
             Log.Error("Erro Kill (linux): " + ex.Message);
             return false;
         }
+    }
+
+    public void Dispose()
+    {
+        Log.Information("MpvManager_Linux.Dispose()");
     }
 
 }

@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO.Pipes;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
@@ -10,7 +11,45 @@ namespace AdLumeClient.Classes.mpv;
 
 public class MpvClient : IMpvClient
 {
+
+    private const int T_REFRESH = 100;
+
     private Stream? _stream;
+
+    event Action<string>? OnEvent;
+    //event Action<string>
+
+    public MpvClient()
+    {
+        Log.Information("ctor MpvClient...");
+        Task.Run(ReadLoop);
+    }
+
+    private async Task ReadLoop()
+    {
+        var buffer = new byte[8192];
+
+        while (true)
+        {
+
+            if (_stream == null)
+            {
+                continue;
+            }
+
+            var bytesRead = await _stream!.ReadAsync(buffer, 0, buffer.Length);
+
+            if (bytesRead <= 0)
+            {
+                continue;
+            }
+
+            var msg = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+            //Log.Information("MPV RAW: {Msg}", msg);
+            OnEvent?.Invoke(msg);
+
+        }
+    }
 
     public async Task ConnectAsync(string endpoint)
     {
@@ -55,6 +94,8 @@ public class MpvClient : IMpvClient
                 //_stream = new NetworkStream(socket);
             }
 
+            this.OnEvent += HandleMpvEvent;
+
             Log.Information("----- ConnectAsync Fim -----");
 
         }
@@ -94,6 +135,9 @@ public class MpvClient : IMpvClient
 
             await _stream!.WriteAsync(bytes, 0, bytes.Length);
 
+            //tempinho pra processar
+            await Task.Delay(T_REFRESH);
+
         }
         catch (Exception ex)
         {
@@ -103,24 +147,63 @@ public class MpvClient : IMpvClient
 
     }
 
-    public Task SetVolume(int volume)
-        => SendCommandAsync(new object[] { "set_property", "volume", volume });
+    public async  Task SetVolume(int volume)
+    {
+        await SendCommandAsync(new object[] { "set_property", "volume", volume });
+    }
 
-    public Task LoadFilePrimeira(string file)
-    => SendCommandAsync(new object[] { "loadfile", file, "replace" });
+    public async Task LoadFilePrimeira(string file)
+    {
+        
+        await SendCommandAsync(new object[] { "loadfile", file, "replace" });
+    }
 
-    public Task LoadFileAppend(string file)
-        => SendCommandAsync(new object[] { "loadfile", file, "append" }); //append-play
+    public async Task LoadFileAppend(string file)
+    {
+        
+        await SendCommandAsync(new object[] { "loadfile", file, "append" }); //append-play
+    }
 
-    public Task PlaylistClear()
-        => SendCommandAsync(new object[] { "playlist-clear" });
+    public async Task PlaylistClear()
+    {
+        
+        await SendCommandAsync(new object[] { "playlist-clear" });
+    }
 
-    public Task SetPause(bool pause)
-        => SendCommandAsync(new object[] { "set_property", "pause", pause });
+    public async Task SetPause(bool pause)
+    {
+        
+        await SendCommandAsync(new object[] { "set_property", "pause", pause });
+    }
 
-    public Task SetFullscreen(bool fullscreen)
-        => SendCommandAsync(new object[] { "set_property", "fullscreen", fullscreen });
+    public async Task SetFullscreen(bool fullscreen)
+    {
+        
+        await SendCommandAsync(new object[] { "set_property", "fullscreen", fullscreen });
+    }
 
-    public Task LoopPlaylist()
-        => SendCommandAsync(new object[] { "set_property", "loop-playlist", "inf" });
+    public async Task LoopPlaylist()
+    {
+        
+        await SendCommandAsync(new object[] { "set_property", "loop-playlist", "inf" });
+    }
+
+    static void HandleMpvEvent(string e)
+    {
+
+        if (e == null)
+        {
+            return;
+        }
+
+        //Log.Information("Sistema iniciado");
+        Log.Debug("MPV EVENT: {Event}", e.ToString().Replace("\n", " "));
+    }
+
+
+    public void Dispose()
+    {
+        Log.Information("MpvClient.Dispose()");
+    }
+
 }

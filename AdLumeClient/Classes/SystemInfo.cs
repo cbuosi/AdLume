@@ -142,102 +142,120 @@ class SystemInfo
 
             if (numero == 1)
             {
-                Console.WriteLine(Rainbow(@$"                                          dddddddd                                                                                      "));
-                Console.WriteLine(Rainbow(@$"               AAA                        d::::::dLLLLLLLLLLL                                                                           "));
-                Console.WriteLine(Rainbow(@$"              A:::A                       d::::::dL:::::::::L                                                                           "));
-                Console.WriteLine(Rainbow(@$"             A:::::A                      d::::::dL:::::::::L                                                                           "));
-                Console.WriteLine(Rainbow(@$"            A:::::::A                     d:::::d LL:::::::LL                                                                           "));
-                Console.WriteLine(Rainbow(@$"           A:::::::::A            ddddddddd:::::d   L:::::L               uuuuuu    uuuuuu     mmmmmmm    mmmmmmm       eeeeeeeeeeee    "));
-                Console.WriteLine(Rainbow(@$"          A:::::A:::::A         dd::::::::::::::d   L:::::L               u::::u    u::::u   mm:::::::m  m:::::::mm   ee::::::::::::ee  "));
-                Console.WriteLine(Rainbow(@$"         A:::::A A:::::A       d::::::::::::::::d   L:::::L               u::::u    u::::u  m::::::::::mm::::::::::m e::::::eeeee:::::ee"));
-                Console.WriteLine(Rainbow(@$"        A:::::A   A:::::A     d:::::::ddddd:::::d   L:::::L               u::::u    u::::u  m::::::::::::::::::::::me::::::e     e:::::e"));
-                Console.WriteLine(Rainbow(@$"       A:::::A     A:::::A    d::::::d    d:::::d   L:::::L               u::::u    u::::u  m:::::mmm::::::mmm:::::me:::::::eeeee::::::e"));
-                Console.WriteLine(Rainbow(@$"      A:::::AAAAAAAAA:::::A   d:::::d     d:::::d   L:::::L               u::::u    u::::u  m::::m   m::::m   m::::me:::::::::::::::::e "));
-                Console.WriteLine(Rainbow(@$"     A:::::::::::::::::::::A  d:::::d     d:::::d   L:::::L               u::::u    u::::u  m::::m   m::::m   m::::me::::::eeeeeeeeeee  "));
-                Console.WriteLine(Rainbow(@$"    A:::::AAAAAAAAAAAAA:::::A d:::::d     d:::::d   L:::::L         LLLLLLu:::::uuuu:::::u  m::::m   m::::m   m::::me:::::::e           "));
-                Console.WriteLine(Rainbow(@$"   A:::::A             A:::::Ad::::::ddddd::::::ddLL:::::::LLLLLLLLL:::::Lu:::::::::::::::uum::::m   m::::m   m::::me::::::::e          "));
-                Console.WriteLine(Rainbow(@$"  A:::::A               A:::::Ad:::::::::::::::::dL::::::::::::::::::::::L u:::::::::::::::um::::m   m::::m   m::::m e::::::::eeeeeeee  "));
-                Console.WriteLine(Rainbow(@$" A:::::A                 A:::::Ad:::::::::ddd::::dL::::::::::::::::::::::L  uu::::::::uu:::um::::m   m::::m   m::::m  ee:::::::::::::e  "));
-                Console.WriteLine(Rainbow(@$"AAAAAAA                   AAAAAAAddddddddd   dddddLLLLLLLLLLLLLLLLLLLLLLLL    uuuuuuuu  uuuummmmmm   mmmmmm   mmmmmm    eeeeeeeeeeeeee  "));
+
+                //                          | A:::::A                 A:::::Ad:::::::::ddd::::dL::::::::::::::::::::::L  uu::::::::uu:::um::::m   m::::m   m::::m  ee
+                Console.WriteLine(Rainbow(@$"╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗"));
+                Console.WriteLine(Rainbow(@$"║                                                                                                                (TM)║"));
+                Console.WriteLine(Rainbow(@$"║               AAA                      ddddddd LLLLLLLLL                                                           ║"));
+                Console.WriteLine(Rainbow(@$"║              A:::A                     d:::::d L:::::::L                                                           ║"));
+                Console.WriteLine(Rainbow(@$"║             A:::::A                    d:::::d LL:::::LL                                                           ║"));
+                Console.WriteLine(Rainbow(@$"║            A:::::::A                   d::::d    L:::L                                                             ║"));
+                Console.WriteLine(Rainbow(@$"║           A:::::::::A           dddddddd::::d    L:::L          uuuuu    uuuu    mmmmmm   mmmmmm      eeeeeeee     ║"));
+                Console.WriteLine(Rainbow(@$"║          A:::::A:::::A        dd::::::::::::d    L:::L          u:::u    u::u   m::::::m m::::::m   ee::::::::ee   ║"));
+                Console.WriteLine(Rainbow(@$"║         A:::::A A:::::A      d::::::::::::::d    L:::L          u:::u    u::u  m::::::::m::::::::m e::::eeeee:::ee ║"));
+                Console.WriteLine(Rainbow(@$"║        A:::::A   A:::::A    d::::::ddddd::::d    L:::L          u:::u    u::u  m:::::::::::::::::me::::e     e:::e ║"));
+                Console.WriteLine(Rainbow(@$"║       A:::::A     A:::::A   d:::::d    d::::d    L:::L          u:::u    u::u  m:::mmm:::::mmm:::me:::::eeeee::::e ║"));
+                Console.WriteLine(Rainbow(@$"║      A:::::AAAAAAAAA:::::A  d::::d     d::::d    L:::L          u:::u    u::u  m::m   m:::m   m::me:::::::::::::e  ║"));
+                Console.WriteLine(Rainbow(@$"║     A:::::::::::::::::::::A d::::d     d::::d    L:::L          u:::u    u::u  m::m   m:::m   m::me::::eeeeeeeee   ║"));
+                Console.WriteLine(Rainbow(@$"║    A:::::AAAAAAAAAAAAA:::::Ad::::d     d::::d    L:::L      LLLLu::::uuuu:::u  m::m   m:::m   m::me:::::e          ║"));
+                Console.WriteLine(Rainbow(@$"║   A:::::A             A:::::d:::::ddddd:::::dd LL:::::LLLLLL:::Lu::::::::::::uum::m   m:::m   m::me::::::e         ║"));
+                Console.WriteLine(Rainbow(@$"║  A:::::A               A::::Ad:::::::::::::::d L:::::::::::::::L u::::::::::::um::m   m:::m   m::m e::::::eeeeee   ║"));
+                Console.WriteLine(Rainbow(@$"║ A:::::A                 A::::Ad::::::::ddd:::d L:::::::::::::::L  uu::::::uu::um::m   m:::m   m::m  ee:::::::::e   ║"));
+                Console.WriteLine(Rainbow(@$"║ AAAAAA                   AAAAAAdddddddd   dddd LLLLLLLLLLLLLLLLL    uuuuuu  uuummmm   mmmmm   mmmm    eeeeeeeeee   ║"));
+                Console.WriteLine(Rainbow(@$"╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝"));
             }
             if (numero == 2)
             {
-                Console.WriteLine(Rainbow(@$"                                                                                       "));
-                Console.WriteLine(Rainbow(@$"       db                 88  88                                                       "));
-                Console.WriteLine(Rainbow(@$"      d88b                88  88                                                       "));
-                Console.WriteLine(Rainbow(@$"     d8'`8b               88  88                                                       "));
-                Console.WriteLine(Rainbow(@$"    d8'  `8b      ,adPPYb,88  88          88       88  88,dPYba,,adPYba,    ,adPPYba,  "));
-                Console.WriteLine(Rainbow(@$"   d8YaaaaY8b    a8""    `Y88  88          88       88  88P'   ""88""    ""8a  a8P_____88"));
-                Console.WriteLine(Rainbow(@$"  d8""""""""""""""""8b   8b       88  88          88       88  88      88      88  8PP"""""""""""""""));
-                Console.WriteLine(Rainbow(@$" d8'        `8b  ""8a,   ,d88  88          ""8a,   ,a88  88      88      88  ""8b,   ,aa  "));
-                Console.WriteLine(Rainbow(@$"d8'          `8b  `""8bbdP""Y8  88888888888  `""YbbdP'Y8  88      88      88   `""Ybbd8""'  "));
+                Console.WriteLine(Rainbow(@$"╔═══════════════════════════════════════════════════════════════════════════════════════╗"));
+                Console.WriteLine(Rainbow(@$"║        db                 88  88                                                  (TM)║"));
+                Console.WriteLine(Rainbow(@$"║       d88b                88  88                                                      ║"));
+                Console.WriteLine(Rainbow(@$"║      d8'`8b               88  88                                                      ║"));
+                Console.WriteLine(Rainbow(@$"║     d8'  `8b      ,adPPYb,88  88          88       88  88,dPYba,,adPYba,    ,adPPYba, ║"));
+                Console.WriteLine(Rainbow(@$"║    d8YaaaaY8b    a8""    `Y88  88          88       88  88P'   ""88""    ""8a  a8P_____88 ║"));
+                Console.WriteLine(Rainbow(@$"║   d8""""""""""""""""8b   8b       88  88          88       88  88      88      88  8PP"""""""""""""" ║"));
+                Console.WriteLine(Rainbow(@$"║  d8'        `8b  ""8a,   ,d88  88          ""8a,   ,a88  88      88      88  ""8b,   ,aa ║"));
+                Console.WriteLine(Rainbow(@$"║ d8'          `8b  `""8bbdP""Y8  88888888888  `""YbbdP'Y8  88      88      88   `""Ybbd8""' ║"));
+                Console.WriteLine(Rainbow(@$"╚═══════════════════════════════════════════════════════════════════════════════════════╝"));
             }
             if (numero == 3)
             {
-                Console.WriteLine(Rainbow(@$"    e Y8b          888 888                                   "));
-                Console.WriteLine(Rainbow(@$"   d8b Y8b     e88 888 888     8888 8888 888 888 8e   ,e e,  "));
-                Console.WriteLine(Rainbow(@$"  d888b Y8b   d888 888 888     8888 8888 888 888 88b d88 88b "));
-                Console.WriteLine(Rainbow(@$" d888888888b  Y888 888 888  ,d Y888 888P 888 888 888 888   , "));
-                Console.WriteLine(Rainbow(@$"d8888888b Y8b  ""88 888 888.d88  ""88 88""  888 888 888  ""YeeP"" "));
+                Console.WriteLine(Rainbow(@$"╔══════════════════════════════════════════════════════════════╗"));
+                Console.WriteLine(Rainbow(@$"║     e Y8b          888 888                                 (TM)║"));
+                Console.WriteLine(Rainbow(@$"║    d8b Y8b     e88 888 888     8888 8888 888 888 8e   ,e e,  ║"));
+                Console.WriteLine(Rainbow(@$"║   d888b Y8b   d888 888 888     8888 8888 888 888 88b d88 88b ║"));
+                Console.WriteLine(Rainbow(@$"║  d888888888b  Y888 888 888  ,d Y888 888P 888 888 888 888   , ║"));
+                Console.WriteLine(Rainbow(@$"║ d8888888b Y8b  ""88 888 888.d88  ""88 88""  888 888 888  ""YeeP"" ║"));
+                Console.WriteLine(Rainbow(@$"╚══════════════════════════════════════════════════════════════╝"));
             }
             if (numero == 4)
             {
-                Console.WriteLine(Rainbow(@$"      .o.             .o8  ooooo                                                "));
-                Console.WriteLine(Rainbow(@$"     .888.           ""888  `888'                                                "));
-                Console.WriteLine(Rainbow(@$"    .8""888.      .oooo888   888         oooo  oooo  ooo. .oo.  .oo.    .ooooo.  "));
-                Console.WriteLine(Rainbow(@$"   .8' `888.    d88' `888   888         `888  `888  `888P""Y88bP""Y88b  d88' `88b "));
-                Console.WriteLine(Rainbow(@$"  .88ooo8888.   888   888   888          888   888   888   888   888  888ooo888 "));
-                Console.WriteLine(Rainbow(@$" .8'     `888.  888   888   888       o  888   888   888   888   888  888    .o "));
-                Console.WriteLine(Rainbow(@$"o88o     o8888o `Y8bod88P"" o888ooooood8  `V88V""V8P' o888o o888o o888o `Y8bod8P' "));
+                Console.WriteLine(Rainbow(@$"╔══════════════════════════════════════════════════════════════════════════════════╗"));
+                Console.WriteLine(Rainbow(@$"║       .o.             .o8  ooooo                                             (TM)║"));
+                Console.WriteLine(Rainbow(@$"║      .888.           ""888  `888'                                                 ║"));
+                Console.WriteLine(Rainbow(@$"║     .8""888.      .oooo888   888         oooo  oooo  ooo. .oo.  .oo.    .ooooo.   ║"));
+                Console.WriteLine(Rainbow(@$"║    .8' `888.    d88' `888   888         `888  `888  `888P""Y88bP""Y88b  d88' `88b  ║"));
+                Console.WriteLine(Rainbow(@$"║   .88ooo8888.   888   888   888          888   888   888   888   888  888ooo888  ║"));
+                Console.WriteLine(Rainbow(@$"║  .8'     `888.  888   888   888       o  888   888   888   888   888  888    .o  ║"));
+                Console.WriteLine(Rainbow(@$"║ o88o     o8888o `Y8bod88P"" o888ooooood8  `V88V""V8P' o888o o888o o888o `Y8bod8P'  ║"));
+                Console.WriteLine(Rainbow(@$"╚══════════════════════════════════════════════════════════════════════════════════╝"));
             }
             if (numero == 5)
             {
-                Console.WriteLine(Rainbow(@$"MMP""""""""""""""MM       dP M""""MMMMMMMM                              "));
-                Console.WriteLine(Rainbow(@$"M' .mmmm  MM       88 M  MMMMMMMM                              "));
-                Console.WriteLine(Rainbow(@$"M         `M .d888b88 M  MMMMMMMM dP    dP 88d8b.d8b. .d8888b. "));
-                Console.WriteLine(Rainbow(@$"M  MMMMM  MM 88'  `88 M  MMMMMMMM 88    88 88'`88'`88 88ooood8 "));
-                Console.WriteLine(Rainbow(@$"M  MMMMM  MM 88.  .88 M  MMMMMMMM 88.  .88 88  88  88 88.  ... "));
-                Console.WriteLine(Rainbow(@$"M  MMMMM  MM `88888P8 M         M `88888P' dP  dP  dP `88888P' "));
-                Console.WriteLine(Rainbow(@$"MMMMMMMMMMMM          MMMMMMMMMMM                              "));
+                Console.WriteLine(Rainbow(@$"╔════════════════════════════════════════════════════════════════╗"));
+                Console.WriteLine(Rainbow(@$"║ MMP""""""""""""""MM       dP M""""MMMMMMMM                          (TM)║"));
+                Console.WriteLine(Rainbow(@$"║ M' .mmmm  MM       88 M  MMMMMMMM                              ║"));
+                Console.WriteLine(Rainbow(@$"║ M         `M .d888b88 M  MMMMMMMM dP    dP 88d8b.d8b. .d8888b. ║"));
+                Console.WriteLine(Rainbow(@$"║ M  MMMMM  MM 88'  `88 M  MMMMMMMM 88    88 88'`88'`88 88ooood8 ║"));
+                Console.WriteLine(Rainbow(@$"║ M  MMMMM  MM 88.  .88 M  MMMMMMMM 88.  .88 88  88  88 88.  ... ║"));
+                Console.WriteLine(Rainbow(@$"║ M  MMMMM  MM `88888P8 M         M `88888P' dP  dP  dP `88888P' ║"));
+                Console.WriteLine(Rainbow(@$"╚════════════════════════════════════════════════════════════════╝"));
             }
             if (numero == 6)
             {
-                Console.WriteLine(Rainbow(@$"   █████████       █████ █████                                          "));
-                Console.WriteLine(Rainbow(@$"  ███░░░░░███     ░░███ ░░███                                           "));
-                Console.WriteLine(Rainbow(@$" ░███    ░███   ███████  ░███        █████ ████ █████████████    ██████ "));
-                Console.WriteLine(Rainbow(@$" ░███████████  ███░░███  ░███       ░░███ ░███ ░░███░░███░░███  ███░░███"));
-                Console.WriteLine(Rainbow(@$" ░███░░░░░███ ░███ ░███  ░███        ░███ ░███  ░███ ░███ ░███ ░███████ "));
-                Console.WriteLine(Rainbow(@$" ░███    ░███ ░███ ░███  ░███      █ ░███ ░███  ░███ ░███ ░███ ░███░░░  "));
-                Console.WriteLine(Rainbow(@$" █████   █████░░████████ ███████████ ░░████████ █████░███ █████░░██████ "));
-                Console.WriteLine(Rainbow(@$"░░░░░   ░░░░░  ░░░░░░░░ ░░░░░░░░░░░   ░░░░░░░░ ░░░░░ ░░░ ░░░░░  ░░░░░░  "));
+                Console.WriteLine(Rainbow(@$"╔══════════════════════════════════════════════════════════════════════════╗"));
+                Console.WriteLine(Rainbow(@$"║    █████████       █████ █████                                       (TM)║"));
+                Console.WriteLine(Rainbow(@$"║   ███░░░░░███     ░░███ ░░███                                            ║"));
+                Console.WriteLine(Rainbow(@$"║  ░███    ░███   ███████  ░███        █████ ████ █████████████    ██████  ║"));
+                Console.WriteLine(Rainbow(@$"║  ░███████████  ███░░███  ░███       ░░███ ░███ ░░███░░███░░███  ███░░███ ║"));
+                Console.WriteLine(Rainbow(@$"║  ░███░░░░░███ ░███ ░███  ░███        ░███ ░███  ░███ ░███ ░███ ░███████  ║"));
+                Console.WriteLine(Rainbow(@$"║  ░███    ░███ ░███ ░███  ░███      █ ░███ ░███  ░███ ░███ ░███ ░███░░░   ║"));
+                Console.WriteLine(Rainbow(@$"║  █████   █████░░████████ ███████████ ░░████████ █████░███ █████░░██████  ║"));
+                Console.WriteLine(Rainbow(@$"║ ░░░░░   ░░░░░  ░░░░░░░░ ░░░░░░░░░░░   ░░░░░░░░ ░░░░░ ░░░ ░░░░░  ░░░░░░   ║"));
+                Console.WriteLine(Rainbow(@$"╚══════════════════════════════════════════════════════════════════════════╝"));
             }
             if (numero == 7)
             {
-                Console.WriteLine(Rainbow(@$"   █████████       █████ █████                                          "));
-                Console.WriteLine(Rainbow(@$"  ███▒▒▒▒▒███     ▒▒███ ▒▒███                                           "));
-                Console.WriteLine(Rainbow(@$" ▒███    ▒███   ███████  ▒███        █████ ████ █████████████    ██████ "));
-                Console.WriteLine(Rainbow(@$" ▒███████████  ███▒▒███  ▒███       ▒▒███ ▒███ ▒▒███▒▒███▒▒███  ███▒▒███"));
-                Console.WriteLine(Rainbow(@$" ▒███▒▒▒▒▒███ ▒███ ▒███  ▒███        ▒███ ▒███  ▒███ ▒███ ▒███ ▒███████ "));
-                Console.WriteLine(Rainbow(@$" ▒███    ▒███ ▒███ ▒███  ▒███      █ ▒███ ▒███  ▒███ ▒███ ▒███ ▒███▒▒▒  "));
-                Console.WriteLine(Rainbow(@$" █████   █████▒▒████████ ███████████ ▒▒████████ █████▒███ █████▒▒██████ "));
-                Console.WriteLine(Rainbow(@$"▒▒▒▒▒   ▒▒▒▒▒  ▒▒▒▒▒▒▒▒ ▒▒▒▒▒▒▒▒▒▒▒   ▒▒▒▒▒▒▒▒ ▒▒▒▒▒ ▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒▒  "));
+                Console.WriteLine(Rainbow(@$"╔═════════════════════════════════════════════════════════════════════════╗"));
+                Console.WriteLine(Rainbow(@$"║   █████████       █████ █████                                       (TM)║"));
+                Console.WriteLine(Rainbow(@$"║  ███▒▒▒▒▒███     ▒▒███ ▒▒███                                            ║"));
+                Console.WriteLine(Rainbow(@$"║ ▒███    ▒███   ███████  ▒███        █████ ████ █████████████    ██████  ║"));
+                Console.WriteLine(Rainbow(@$"║ ▒███████████  ███▒▒███  ▒███       ▒▒███ ▒███ ▒▒███▒▒███▒▒███  ███▒▒███ ║"));
+                Console.WriteLine(Rainbow(@$"║ ▒███▒▒▒▒▒███ ▒███ ▒███  ▒███        ▒███ ▒███  ▒███ ▒███ ▒███ ▒███████  ║"));
+                Console.WriteLine(Rainbow(@$"║ ▒███    ▒███ ▒███ ▒███  ▒███      █ ▒███ ▒███  ▒███ ▒███ ▒███ ▒███▒▒▒   ║"));
+                Console.WriteLine(Rainbow(@$"║ █████   █████▒▒████████ ███████████ ▒▒████████ █████▒███ █████▒▒██████  ║"));
+                Console.WriteLine(Rainbow(@$"║ ▒▒▒▒▒   ▒▒▒▒▒  ▒▒▒▒▒▒▒▒ ▒▒▒▒▒▒▒▒▒▒▒   ▒▒▒▒▒▒▒▒ ▒▒▒▒▒ ▒▒▒ ▒▒▒▒▒  ▒▒▒▒▒▒  ║"));
+                Console.WriteLine(Rainbow(@$"╚═════════════════════════════════════════════════════════════════════════╝"));
             }
             if (numero == 8)
             {
-                Console.WriteLine(Rainbow(@$"  ▄▄▄▄      ▄▄ ▄▄▄                           "));
-                Console.WriteLine(Rainbow(@$"▄██▀▀██▄    ██ ███                           "));
-                Console.WriteLine(Rainbow(@$"███  ███ ▄████ ███      ██ ██ ███▄███▄ ▄█▀█▄ "));
-                Console.WriteLine(Rainbow(@$"███▀▀███ ██ ██ ███      ██ ██ ██ ██ ██ ██▄█▀ "));
-                Console.WriteLine(Rainbow(@$"███  ███ ▀████ ████████ ▀██▀█ ██ ██ ██ ▀█▄▄▄ "));
+                Console.WriteLine(Rainbow(@$"╔══════════════════════════════════════════════╗"));
+                Console.WriteLine(Rainbow(@$"║   ▄▄▄▄      ▄▄ ▄▄▄                       (TM)║"));
+                Console.WriteLine(Rainbow(@$"║ ▄██▀▀██▄    ██ ███                           ║"));
+                Console.WriteLine(Rainbow(@$"║ ███  ███ ▄████ ███      ██ ██ ███▄███▄ ▄█▀█▄ ║"));
+                Console.WriteLine(Rainbow(@$"║ ███▀▀███ ██ ██ ███      ██ ██ ██ ██ ██ ██▄█▀ ║"));
+                Console.WriteLine(Rainbow(@$"║ ███  ███ ▀████ ████████ ▀██▀█ ██ ██ ██ ▀█▄▄▄ ║"));
+                Console.WriteLine(Rainbow(@$"╚══════════════════════════════════════════════╝"));
             }
             if (numero == 9)
             {
-                Console.WriteLine(Rainbow(@$" █████╗ ██████╗ ██╗     ██╗   ██╗███╗   ███╗███████╗"));
-                Console.WriteLine(Rainbow(@$"██╔══██╗██╔══██╗██║     ██║   ██║████╗ ████║██╔════╝"));
-                Console.WriteLine(Rainbow(@$"███████║██║  ██║██║     ██║   ██║██╔████╔██║█████╗  "));
-                Console.WriteLine(Rainbow(@$"██╔══██║██║  ██║██║     ██║   ██║██║╚██╔╝██║██╔══╝  "));
-                Console.WriteLine(Rainbow(@$"██║  ██║██████╔╝███████╗╚██████╔╝██║ ╚═╝ ██║███████╗"));
-                Console.WriteLine(Rainbow(@$"╚═╝  ╚═╝╚═════╝ ╚══════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝"));
+                Console.WriteLine(Rainbow(@$"╔═════════════════════════════════════════════════════════╗"));
+                Console.WriteLine(Rainbow(@$"║  █████╗ ██████╗ ██╗     ██╗   ██╗███╗   ███╗███████╗(TM)║"));
+                Console.WriteLine(Rainbow(@$"║ ██╔══██╗██╔══██╗██║     ██║   ██║████╗ ████║██╔════╝    ║"));
+                Console.WriteLine(Rainbow(@$"║ ███████║██║  ██║██║     ██║   ██║██╔████╔██║█████╗      ║"));
+                Console.WriteLine(Rainbow(@$"║ ██╔══██║██║  ██║██║     ██║   ██║██║╚██╔╝██║██╔══╝      ║"));
+                Console.WriteLine(Rainbow(@$"║ ██║  ██║██████╔╝███████╗╚██████╔╝██║ ╚═╝ ██║███████╗    ║"));
+                Console.WriteLine(Rainbow(@$"║ ╚═╝  ╚═╝╚═════╝ ╚══════╝ ╚═════╝ ╚═╝     ╚═╝╚══════╝    ║"));
+                Console.WriteLine(Rainbow(@$"╚═════════════════════════════════════════════════════════╝"));
             }
 
             Console.WriteLine($"");

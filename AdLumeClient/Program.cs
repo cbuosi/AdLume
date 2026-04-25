@@ -23,8 +23,8 @@ static class Program
     static string mpvAppPath = "";
     static int SyncIntervalSeconds;
 
-    static IMpvManager mpvManager = MpvManagerFactory.Create();
-    static IMpvClient mpvClient = MpvClientFactory.Create();
+    static IMpvManager? mpvManager;
+    static IMpvClient? mpvClient;
 
     static HttpClient? _http;
 
@@ -41,19 +41,21 @@ static class Program
         {
             IniciaSerilog();
 
-            //Inicia cliente http com umas paradas pra ignorar certificado zoado XD
-            _http = CreateHttpClient();
-
-            Log.Information($"##################################################");
-            Log.Information($"# AdLume Client v.2.0.1 - BBS Informática © 2026 #");
-            Log.Information($"##################################################");
-            Log.Information($"");
-
-
             SystemInfo.PrintLogoAdLume();
+
+
+            Log.Information($"╔════════════════════════════════════════════════════╗");
+            Log.Information($"║              - AdLume Client v.2.0.1 -             ║");
+            Log.Information($"║             - BBS Informática © 2026 -             ║");
+            Log.Information($"║      - www.bbsinfo.com.br / cbuosi@gmail.com -     ║");
+            Log.Information($"╚════════════════════════════════════════════════════╝");
 
             SystemInfo.PrintSummary();
 
+            mpvManager = MpvManagerFactory.Create();
+            mpvClient = MpvClientFactory.Create();
+            //Inicia cliente http com umas paradas pra ignorar certificado zoado XD
+            _http = CreateHttpClient();
             //var health = SystemHealth.Get(
             //    mediaPath: Path.Combine(AppContext.BaseDirectory, "Videos"),
             //    mpvConnected: true, // ou controle real depois
@@ -114,6 +116,13 @@ static class Program
 
                 FiltraHorarioAtual();
 
+                processes = Process.GetProcessesByName("mpv");
+                if (processes.Length == 0)
+                {
+                    Log.Information($"Processo do MPV não encontrado (1), reiniciando...");
+                    bForcaAtualiza = true;
+                }
+
                 if (hashAtual != GetObjectHash(oEquipPlaylistHorarioAtual!) || bForcaAtualiza)
                 {
                     bForcaAtualiza = false;
@@ -129,7 +138,7 @@ static class Program
                     processes = Process.GetProcessesByName("mpv");
                     if (processes.Length == 0)
                     {
-                        Log.Information($"Processo do MPV não encontrado, reiniciando...");
+                        Log.Information($"Processo do MPV não encontrado (2), reiniciando...");
                         await ReiniciaMPV();
                         bForcaAtualiza = true;
                     }
@@ -204,7 +213,7 @@ static class Program
                 //15:00 < 16:21 < 19:00 - adiciona
                 if ((item.MinIni() <= iHorarioAtual) && (iHorarioAtual <= item.MinFin()))
                 {
-                    Log.Information($"Mídia Selecionada: {item.DescMidia} {item.HoraInicio}({item.MinIni()}) <= {DateTime.Now.ToString("HH:mm")} ({iHorarioAtual}) <= {item.HoraFim}({item.MinFin()})");
+                    Log.Information($"{item.HoraInicio}({item.MinIni()}) <= {DateTime.Now.ToString("HH:mm")} ({iHorarioAtual}) <= {item.HoraFim}({item.MinFin()}) Mídia Selecionada: [{item.DescMidia}]");
                     oEquipPlaylistHorarioAtual.Add(item);
                 }
 
@@ -232,7 +241,7 @@ static class Program
             //var basePath = AppContext.BaseDirectory;
             //var mpvFolder = Path.Combine(basePath, "mpv");
 
-            if (!await mpvManager.IsInstalledAsync(mpvAppPath))
+            if (!await mpvManager!.IsInstalledAsync(mpvAppPath))
             {
                 Log.Information($"IsInstalledAsync erro!");
                 return false;
@@ -245,7 +254,9 @@ static class Program
             }
 
             await Task.Delay(300);
-            await mpvClient.ConnectAsync(mpvManager.GetIpcEndpoint());
+            await mpvClient!.ConnectAsync(mpvManager.GetIpcEndpoint());
+
+            //mpvClient!.OnEvent += HandleMpvEvent;
 
             Log.Information($"----- ReiniciaMPV Fim -----");
 
@@ -271,7 +282,7 @@ static class Program
             var basePath = AppContext.BaseDirectory;
             var mediaPath = Path.Combine(basePath, "Videos");
 
-            await mpvClient.PlaylistClear();
+            await mpvClient!.PlaylistClear();
 
             foreach (var item in lista!)
             {
@@ -322,7 +333,7 @@ static class Program
 
                 if (File.Exists(filePath))
                 {
-                    Log.Information($"Ja existe a midia: {media.HashMidia}.mp4");
+                    Log.Information($"   -> Ja existe a midia...: [{media.HashMidia}.mp4]");
                     continue;
                 }
 
@@ -331,24 +342,24 @@ static class Program
                 var request = new HttpRequestMessage(HttpMethod.Get, url);
 
                 // 🔑 Bearer aqui
-                request.Headers.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "bbsinfo.com.br");
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "bbsinfo.com.br");
 
                 // 👇 importante pra arquivos grandes (streaming)
                 var response = await _http!.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    Log.Warning($"Erro ao baixar mídia: {response.StatusCode}");
+                    Log.Information($"   -> Erro ao baixar mídia: [{media.HashMidia}.mp4] Erro: [{response.StatusCode}]");
                     continue;
                 }
 
                 await using var stream = await response.Content.ReadAsStreamAsync();
+                //                Sistema Operacional....: Microsoft Windows NT 10.0.29570.0 - Win32NT - 10.0.29570.0
+                Log.Information($"   -> Salvando nova midia.: [{media.HashMidia}.mp4]");
                 await using var fileStream = File.Create(filePath);
 
                 await stream.CopyToAsync(fileStream);
 
-                Log.Information($"Salvando nova midia: {media.HashMidia}.mp4");
             }
 
             return true;
@@ -358,53 +369,6 @@ static class Program
             Log.Error(ex, $"Erro em SyncMedia");
             return false;
         }
-    }
-
-    static async Task<bool> SyncMediax(IEnumerable<EquipamentoPlaylistDto>? lista)
-    {
-
-        try
-        {
-
-            Log.Information($"----- SyncMedia -----");
-
-            var basePath = AppContext.BaseDirectory;
-            var mediaPath = Path.Combine(basePath, "Videos");
-
-            Directory.CreateDirectory(mediaPath);
-
-            foreach (var media in lista!)
-            {
-                var filePath = Path.Combine(mediaPath, $"{media.HashMidia}.mp4");
-
-                if (File.Exists(filePath))
-                {
-                    Log.Information($"Ja existe a midia: {media.HashMidia}.mp4");
-                    continue;
-                }
-
-                //var url = string.Format(media.NomeMidia!, "https", "localhost", "7246");
-                var url = $"{serverUrl}/media/{media.NomeMidia}";
-
-                var bytes = await _http!.GetByteArrayAsync(url);
-                if (bytes.Length > 0)
-                {
-                    Log.Information($"Salvando nova midia: {media.HashMidia}.mp4 - Tam: {bytes.Length.ToString("N0")} bytes");
-                    await File.WriteAllBytesAsync(filePath, bytes);
-                }
-
-
-            }
-
-            return true;
-
-        }
-        catch (Exception ex)
-        {
-            Log.Error(ex, $"Erro em SyncMedia");
-            return false;
-        }
-
     }
 
     static internal async Task<List<EquipamentoPlaylistDto>?> ObterPlaylistEquip(string deviceId)
@@ -578,6 +542,10 @@ static class Program
 
         return true; // DEV
 
+    }
+    static void HandleMpvEvent(string e)
+    {
+        Log.Information("MPV EVENT: {Event}", e);
     }
 
 }

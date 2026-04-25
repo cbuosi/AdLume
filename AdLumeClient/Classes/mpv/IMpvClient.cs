@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AdLumeClient.Classes.mpv;
 
-public interface IMpvClient
+public interface IMpvClient : IDisposable
 {
     Task ConnectAsync(string endpoint);
     Task SendCommandAsync(object[] command);

@@ -60,7 +60,7 @@ public class MpvManager_Windows : IMpvManager
                 UseShellExecute = false
             });
 
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(5000);
 
             return true;
         }
@@ -96,4 +96,10 @@ public class MpvManager_Windows : IMpvManager
             return false;
         }
     }
+
+    public void Dispose()
+    {
+        Log.Information("MpvManager_Windows.Dispose()");
+    }
+
 }
