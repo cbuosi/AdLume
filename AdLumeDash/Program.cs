@@ -5,6 +5,8 @@ using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 🔹 MVC + Views
+builder.Services.AddControllersWithViews();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -28,12 +30,21 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
     app.MapOpenApi();
 }
 
 Directory.CreateDirectory("storage");
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+// (se for usar auth depois)
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers(); // <-- ESSENCIAL
 
@@ -49,5 +60,11 @@ app.MapControllers(); // <-- ESSENCIAL
 //xxxx.GeraRegistro(@"C:\Users\CBuosi\source\repos\AdLume\AdLumeDash\Storage\video_tarde_1.mp4"); xxxx.Inserir();
 //xxxx.GeraRegistro(@"C:\Users\CBuosi\source\repos\AdLume\AdLumeDash\Storage\video_tarde_2.mp4"); xxxx.Inserir();
 
+// 🔹 rota padrão MVC
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
 app.Run();
+
 

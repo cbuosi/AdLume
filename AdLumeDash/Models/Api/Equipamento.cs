@@ -1,7 +1,7 @@
 ﻿using Dapper.Contrib.Extensions;
 using Microsoft.Data.SqlClient;
 
-namespace AdLumeDash.Models
+namespace AdLumeDash.Models.Api
 {
 
     [Table("tEquipamento")]

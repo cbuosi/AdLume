@@ -1,5 +1,5 @@
 ﻿using AdLumeDash.Interface;
-using AdLumeDash.Models;
+using AdLumeDash.Models.Api;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using System.Data;

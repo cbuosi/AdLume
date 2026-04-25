@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace AdLumeDash.Models;
+namespace AdLumeDash.Models.Api;
 
 [Table("tMidia")]
 public class Midia

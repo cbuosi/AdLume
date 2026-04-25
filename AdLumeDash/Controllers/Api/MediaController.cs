@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace AdLumeDash.Controllers
+namespace AdLumeDash.Controllers.API
 {
     [ApiController]
     [Route("media")]

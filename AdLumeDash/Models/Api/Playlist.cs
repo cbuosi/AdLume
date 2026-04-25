@@ -1,6 +1,6 @@
 ﻿using Dapper.Contrib.Extensions;
 
-namespace AdLumeDash.Models;
+namespace AdLumeDash.Models.Api;
 
 [Table("tPlaylist")]
 public class Playlist

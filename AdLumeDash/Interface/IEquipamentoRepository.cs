@@ -1,4 +1,4 @@
-﻿using AdLumeDash.Models;
+﻿using AdLumeDash.Models.Api;
 
 namespace AdLumeDash.Interface;
 

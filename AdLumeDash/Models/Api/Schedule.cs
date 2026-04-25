@@ -1,4 +1,4 @@
-﻿namespace AdLumeDash.Models
+﻿namespace AdLumeDash.Models.Api
 {
 
     public class Schedule

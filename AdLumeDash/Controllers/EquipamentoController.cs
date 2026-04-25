@@ -1,49 +1,15 @@
-﻿using AdLumeDash.Interface;
-using AdLumeDash.Models;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Mvc;
+using AdLumeDash.Models.ViewModels.Equipamento;
 
-namespace AdLumeDash.Controllers
+namespace AdLumeDash.Controllers;
+
+public class EquipamentoController : Controller
 {
-    [ApiController]
-    public class EquipamentoController : ControllerBase
+    public IActionResult Index()
     {
+        var vm = new EquipamentoIndexViewModel();
 
-        private readonly IEquipamentoRepository _repo;
-
-        public EquipamentoController(IEquipamentoRepository repo)
-        {
-            _repo = repo;
-        }
-
-        [HttpGet]
-        [Route("Equipamento/{deviceId}")]
-        public async Task<IActionResult> GetEquipamento(string deviceId)
-        {
-
-            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
-
-            if (string.IsNullOrWhiteSpace(authHeader))
-            {
-                return Unauthorized();
-            }
-
-            // Exemplo: validação simples (string fixa)
-            if (!authHeader.Contains("bbsinfo.com.br"))
-            {
-                return Unauthorized();
-            }
-
-            IEnumerable<EquipamentoPlaylistDto>? ret = await _repo.GetByGuid(deviceId);
-
-            if (ret == null)
-                return NotFound();
-
-            return Ok(ret);
-
-
-        }
-
+        // por enquanto vazio
+        return View(vm);
     }
 }
