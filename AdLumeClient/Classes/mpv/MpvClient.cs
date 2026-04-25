@@ -20,6 +20,9 @@ public class MpvClient : IMpvClient
             if (OperatingSystem.IsWindows())
             {
                 Log.Information("----- ConnectAsync (Windows): " + endpoint + " -----");
+                if (string.IsNullOrWhiteSpace(endpoint))
+                    throw new ArgumentException("Endpoint (socket path) não pode ser vazio.");
+
                 var client = new NamedPipeClientStream(".", "mpv-pipe",
                     PipeDirection.InOut, PipeOptions.Asynchronous);
 
@@ -28,12 +31,28 @@ public class MpvClient : IMpvClient
             }
             else
             {
+
                 Log.Information("----- ConnectAsync (Linux): " + endpoint + " -----");
-                var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
+
+                if (string.IsNullOrWhiteSpace(endpoint))
+                    throw new ArgumentException("Endpoint (socket path) não pode ser vazio.");
+
+                if (!File.Exists(endpoint))
+                    throw new FileNotFoundException($"Socket não encontrado em: {endpoint}");
+
+                var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
                 var ep = new UnixDomainSocketEndPoint(endpoint);
 
                 await socket.ConnectAsync(ep);
-                _stream = new NetworkStream(socket);
+                // ownership = true → fecha o socket junto com o stream
+                _stream = new NetworkStream(socket, ownsSocket: true);
+
+                //Log.Information("----- ConnectAsync (Linux): " + endpoint + " -----");
+                //var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.IP);
+                //var ep = new UnixDomainSocketEndPoint(endpoint);
+                //
+                //await socket.ConnectAsync(ep);
+                //_stream = new NetworkStream(socket);
             }
 
             Log.Information("----- ConnectAsync Fim -----");
@@ -50,7 +69,7 @@ public class MpvClient : IMpvClient
     {
 
         string strLog = "";
-        
+
         try
         {
 

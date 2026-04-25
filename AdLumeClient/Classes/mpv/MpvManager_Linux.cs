@@ -11,7 +11,7 @@ namespace AdLumeClient.Classes.mpv;
 public class MpvManager_Linux : IMpvManager
 {
 
-    private const string SocketPath = "/tmp/mpv-socket";
+    private const string SocketPath = "/tmp/mpvsocket";
 
     public async Task<bool> RestartAsync(string mpvPath)
     {
@@ -20,7 +20,7 @@ public class MpvManager_Linux : IMpvManager
             Log.Information("RestartAsync (linux): " + mpvPath);
             Kill();
             await Task.Delay(300);
-            Start(mpvPath);
+            await StartAsync(mpvPath);
             return true;
         }
         catch (Exception ex)
@@ -47,17 +47,40 @@ public class MpvManager_Linux : IMpvManager
 
     public string GetIpcEndpoint() => SocketPath;
 
-    private bool Start(string mpvPath)
+    //private bool Start(string mpvPath)
+    private async Task<bool> StartAsync(string mpvPath)
     {
         try
         {
-            Log.Information("Start (linux): " + mpvPath + " SocketPath: " + SocketPath);
-            Process.Start(new ProcessStartInfo
+            Log.Information($"Start (linux): {mpvPath} SocketPath: {SocketPath}");
+
+            if (File.Exists(SocketPath))
+            {
+                File.Delete(SocketPath);
+            }
+
+            var psi = new ProcessStartInfo
             {
                 FileName = mpvPath,
-                Arguments = $"--input-ipc-server={SocketPath} --idle=yes",
-                UseShellExecute = false
-            });
+                Arguments = $"--idle=yes --no-terminal --input-ipc-server=\"{SocketPath}\"",
+                UseShellExecute = false,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true
+            };
+
+            var process = Process.Start(psi);
+
+            if (process == null)
+                throw new Exception("Falha ao iniciar mpv");
+
+            //Process.Start(new ProcessStartInfo
+            //{
+            //    FileName = mpvPath,
+            //    Arguments = $"--idle=yes --no-terminal --input-ipc-server={SocketPath}",
+            //    UseShellExecute = false
+            //});
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
 
             return true;
 
@@ -76,7 +99,14 @@ public class MpvManager_Linux : IMpvManager
             Log.Information("Kill (linux)");
             foreach (var p in Process.GetProcessesByName("mpv"))
             {
-                try { p.Kill(); } catch { }
+                try
+                {
+                    Log.Information($"Matando processo: {p.Id}");
+                    p.Kill();
+                }
+                catch
+                {
+                }
             }
             return true;
         }

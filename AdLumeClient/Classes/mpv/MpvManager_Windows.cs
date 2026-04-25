@@ -19,7 +19,7 @@ public class MpvManager_Windows : IMpvManager
             Log.Information("RestartAsync (Windows): " + mpvPath);
             Kill();
             await Task.Delay(300);
-            Start(mpvPath);
+            await StartAsync(mpvPath);
             return true;
         }
         catch (Exception ex)
@@ -46,7 +46,8 @@ public class MpvManager_Windows : IMpvManager
 
     public string GetIpcEndpoint() => PipeName;
 
-    private bool Start(string mpvPath)
+    //private bool Start(string mpvPath)
+    private async Task<bool> StartAsync(string mpvPath)
     {
         try
         {
@@ -58,6 +59,9 @@ public class MpvManager_Windows : IMpvManager
                 Arguments = $"--input-ipc-server={PipeName} --idle=yes --force-window=yes",
                 UseShellExecute = false
             });
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
             return true;
         }
         catch (Exception ex)
@@ -75,7 +79,14 @@ public class MpvManager_Windows : IMpvManager
 
             foreach (var p in Process.GetProcessesByName("mpv"))
             {
-                try { p.Kill(true); } catch { }
+                try
+                {
+                    Log.Information($"Matando processo: {p.Id}");
+                    p.Kill();
+                }
+                catch
+                {
+                }
             }
             return true;
         }
