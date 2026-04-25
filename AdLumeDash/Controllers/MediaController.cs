@@ -20,6 +20,20 @@ namespace AdLumeDash.Controllers
         [HttpGet("{fileName}")]
         public IActionResult GetMedia(string fileName)
         {
+
+            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(authHeader))
+            {
+                return Unauthorized();
+            }
+
+            // Exemplo: validação simples (string fixa)
+            if (!authHeader.Contains("bbsinfo.com.br"))
+            {
+                return Unauthorized();
+            }
+
             var path = Path.Combine("storage", fileName);
 
             if (!System.IO.File.Exists(path))

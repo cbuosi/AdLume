@@ -307,6 +307,61 @@ static class Program
 
     static async Task<bool> SyncMedia(IEnumerable<EquipamentoPlaylistDto>? lista)
     {
+        try
+        {
+            Log.Information($"----- SyncMedia -----");
+
+            var basePath = AppContext.BaseDirectory;
+            var mediaPath = Path.Combine(basePath, "Videos");
+
+            Directory.CreateDirectory(mediaPath);
+
+            foreach (var media in lista!)
+            {
+                var filePath = Path.Combine(mediaPath, $"{media.HashMidia}.mp4");
+
+                if (File.Exists(filePath))
+                {
+                    Log.Information($"Ja existe a midia: {media.HashMidia}.mp4");
+                    continue;
+                }
+
+                var url = $"{serverUrl}/media/{media.NomeMidia}";
+
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+                // 🔑 Bearer aqui
+                request.Headers.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "bbsinfo.com.br");
+
+                // 👇 importante pra arquivos grandes (streaming)
+                var response = await _http!.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Log.Warning($"Erro ao baixar mídia: {response.StatusCode}");
+                    continue;
+                }
+
+                await using var stream = await response.Content.ReadAsStreamAsync();
+                await using var fileStream = File.Create(filePath);
+
+                await stream.CopyToAsync(fileStream);
+
+                Log.Information($"Salvando nova midia: {media.HashMidia}.mp4");
+            }
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"Erro em SyncMedia");
+            return false;
+        }
+    }
+
+    static async Task<bool> SyncMediax(IEnumerable<EquipamentoPlaylistDto>? lista)
+    {
 
         try
         {
@@ -331,7 +386,6 @@ static class Program
                 //var url = string.Format(media.NomeMidia!, "https", "localhost", "7246");
                 var url = $"{serverUrl}/media/{media.NomeMidia}";
 
-
                 var bytes = await _http!.GetByteArrayAsync(url);
                 if (bytes.Length > 0)
                 {
@@ -354,6 +408,54 @@ static class Program
     }
 
     static internal async Task<List<EquipamentoPlaylistDto>?> ObterPlaylistEquip(string deviceId)
+    {
+        try
+        {
+            Log.Information($"----- ObterPlaylistEquip -----");
+
+            var arq = Path.Combine(AppContext.BaseDirectory, strArqPlaylist);
+            var json = "[]";
+
+            if (await InternetCheck.TemInternetAsync())
+            {
+                var url = $"{serverUrl}/equipamento/{deviceId}";
+
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+
+                // 🔑 Aqui você adiciona o Bearer
+                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "bbsinfo.com.br");
+
+                var response = await _http!.SendAsync(request);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Log.Warning($"Erro HTTP: {response.StatusCode}");
+                    return null;
+                }
+
+                json = await response.Content.ReadAsStringAsync();
+
+                if (File.Exists(arq))
+                    File.Delete(arq);
+
+                File.WriteAllText(arq, json);
+            }
+            else if (File.Exists(arq))
+            {
+                json = File.ReadAllText(arq);
+            }
+
+            return JsonSerializer.Deserialize<List<EquipamentoPlaylistDto>>(json,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, $"Erro em ObterPlaylistEquip");
+            return new List<EquipamentoPlaylistDto>();
+        }
+    }
+
+    static internal async Task<List<EquipamentoPlaylistDto>?> ObterPlaylistEquipx(string deviceId)
     {
 
         try
