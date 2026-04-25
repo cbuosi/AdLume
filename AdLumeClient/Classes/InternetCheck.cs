@@ -12,7 +12,7 @@ public class InternetCheck
             //Log.Information("TemInternetAsync");
 
             using var client = new HttpClient();
-            client.Timeout = TimeSpan.FromSeconds(5);
+            client.Timeout = TimeSpan.FromSeconds(1);
 
             var response = await client.GetAsync("https://www.google.com");
 

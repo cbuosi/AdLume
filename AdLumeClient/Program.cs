@@ -107,23 +107,8 @@ static class Program
             Log.Information($"Internet...............: {(bInternet ? "SIM" : "NÃO")}");
             Log.Information($"Caminho MPV (Player)...: {mpvAppPath}");
 
-            var ok = await ReiniciaMPV();
-            if (!ok)
-            {
-                Log.Information($"Erro em reiniciar MPV (1)");
-                return;
-            }
-
             while (true)
             {
-
-                processes = Process.GetProcessesByName("mpv");
-                if (processes.Length == 0)
-                {
-                    Log.Information($"Processo do MPV não encontrado, reiniciando...");
-                    await ReiniciaMPV();
-                    bForcaAtualiza = true;
-                }
 
                 oEquipPlaylistDto = await ObterPlaylistEquip(deviceId);
 
@@ -133,6 +118,21 @@ static class Program
                 {
                     bForcaAtualiza = false;
                     Log.Information("Nova configuração detectada!");
+
+                    var ok = await ReiniciaMPV();
+                    if (!ok)
+                    {
+                        Log.Information($"Erro em reiniciar MPV (1)");
+                        return;
+                    }
+
+                    processes = Process.GetProcessesByName("mpv");
+                    if (processes.Length == 0)
+                    {
+                        Log.Information($"Processo do MPV não encontrado, reiniciando...");
+                        await ReiniciaMPV();
+                        bForcaAtualiza = true;
+                    }
 
                     bRet = await SyncMedia(oEquipPlaylistHorarioAtual);
                     if (!bRet)
@@ -148,7 +148,7 @@ static class Program
                         return;
                     }
 
-                    await mpvClient.SetVolume(50);
+                    await mpvClient.SetVolume(30);
                     await mpvClient.LoopPlaylist();
                     await mpvClient.SetPause(false);
                     await mpvClient.SetFullscreen(true);
@@ -261,6 +261,8 @@ static class Program
     public static async Task<bool> UpdatePlayer(IEnumerable<EquipamentoPlaylistDto>? lista)
     {
 
+        int tot = 0;
+
         try
         {
 
@@ -274,9 +276,22 @@ static class Program
             foreach (var item in lista!)
             {
                 var file = Path.Combine(mediaPath, $"{item.HashMidia}.mp4");
-                if (!File.Exists(file)) continue;
+                if (!File.Exists(file))
+                {
+                    continue;
+                }
 
-                await mpvClient.LoadFileAppend(file);
+                tot += 1;
+
+                if (tot == 1)
+                {
+                    await mpvClient.LoadFilePrimeira(file);
+                }
+                else
+                {
+                    await mpvClient.LoadFileAppend(file);
+                }
+
             }
 
             return true;

@@ -106,8 +106,11 @@ public class MpvClient : IMpvClient
     public Task SetVolume(int volume)
         => SendCommandAsync(new object[] { "set_property", "volume", volume });
 
+    public Task LoadFilePrimeira(string file)
+    => SendCommandAsync(new object[] { "loadfile", file, "replace" });
+
     public Task LoadFileAppend(string file)
-        => SendCommandAsync(new object[] { "loadfile", file, "append-play" });
+        => SendCommandAsync(new object[] { "loadfile", file, "append" }); //append-play
 
     public Task PlaylistClear()
         => SendCommandAsync(new object[] { "playlist-clear" });

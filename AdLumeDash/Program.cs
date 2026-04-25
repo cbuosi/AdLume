@@ -38,8 +38,9 @@ app.UseHttpsRedirection();
 app.MapControllers(); // <-- ESSENCIAL
 
 //Midia xxxx = new Midia();
-//xxxx.GeraRegistro(@"C:\Users\CBuosi\source\repos\AdLume\AdLumeDash\Storage\video_manha_1.mp4"); xxxx.Inserir();
-//xxxx.GeraRegistro(@"C:\Users\CBuosi\source\repos\AdLume\AdLumeDash\Storage\video_manha_2.mp4"); xxxx.Inserir();
+//xxxx.GeraRegistro(@"C:\Users\CBuosi\source\repos\AdLume\AdLumeDash\Storage\s3_10s.mp4"); xxxx.Inserir();
+//xxxx.GeraRegistro(@"C:\Users\CBuosi\source\repos\AdLume\AdLumeDash\Storage\s1_60s.mp4"); xxxx.Inserir();
+//xxxx.GeraRegistro(@"C:\Users\CBuosi\source\repos\AdLume\AdLumeDash\Storage\s2_06s.mp4"); xxxx.Inserir();
 //xxxx.GeraRegistro(@"C:\Users\CBuosi\source\repos\AdLume\AdLumeDash\Storage\video_manha_3.mp4"); xxxx.Inserir();
 //xxxx.GeraRegistro(@"C:\Users\CBuosi\source\repos\AdLume\AdLumeDash\Storage\video_noite_1.mp4"); xxxx.Inserir();
 //xxxx.GeraRegistro(@"C:\Users\CBuosi\source\repos\AdLume\AdLumeDash\Storage\video_noite_2.mp4"); xxxx.Inserir();
