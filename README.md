@@ -1,213 +1,143 @@
-# 🎬 AdLume
+# 🚀 AdLume
 
-> Transforme suas telas em receita.
+![.NET](https://img.shields.io/badge/.NET-8.0-blue)
+![Status](https://img.shields.io/badge/status-active-success)
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-blue)
+![License](https://img.shields.io/badge/license-private-red)
 
-**AdLume** é uma plataforma de **Digital Signage** focada em automação de exibição de conteúdo em TVs corporativas, com gerenciamento centralizado e execução local inteligente.
-
----
-
-# 🧠 Visão Geral
-
-O sistema é dividido em dois componentes principais:
-
-## 📺 AdLumeClient
-Aplicação que roda nas TVs (ou dispositivos conectados), responsável por:
-- baixar conteúdos automaticamente
-- armazenar localmente (cache)
-- executar playlists
-- respeitar horários definidos
-- rodar de forma resiliente (offline-first)
-
-## 🧩 AdLumeDash
-Backend responsável por:
-- gerenciar mídias
-- definir playlists
-- configurar agendamentos
-- distribuir configurações para os clients
-- servir arquivos de mídia
+Sistema de reprodução de mídia com controle remoto via API, sincronização offline e integração com player leve.
 
 ---
 
-# 🏗️ Arquitetura
+## 📖 Visão Geral
 
-```
-AdLumeDash (API)
-     ↓
- /device/{id}/config
-     ↓
-AdLumeClient
-     ↓
-Download mídia (/media/{file})
-     ↓
-Execução via mpv.exe
+O **AdLume** é um sistema projetado para distribuição e execução de playlists de mídia em dispositivos remotos.
+
+- Offline-first  
+- Baixo consumo de recursos  
+- Controle centralizado via API  
+- Execução headless com mpv  
+
+---
+
+## 🧱 Arquitetura
+
+```mermaid
+flowchart LR
+    A[API .NET] --> B[Cliente AdLume]
+    B --> C[Cache Local]
+    B --> D[mpv Player IPC]
 ```
 
 ---
 
-# 🚀 Tecnologias
+## 🧩 Componentes
 
-### Backend (AdLumeDash)
-- .NET Web API
-- C#
-- (futuro) SQL Server / PostgreSQL
-- Storage local (evoluindo para S3)
+### 🔹 API (.NET)
+- Fornece playlists por dispositivo
+- Serve arquivos de mídia
+- Protegida via Bearer Token
 
-### Client (AdLumeClient)
-- .NET
-- Player externo: mpv.exe
-- Cache local de mídia
+### 🔹 Cliente
+
+Compatível com **Windows e Linux**, utilizando .NET 8.
+
+- Consome API
+- Faz cache local (JSON)
+- Sincroniza mídias
+- Controla player via socket IPC
+
+### 🌍 Compatibilidade
+
+- Windows
+- Linux
+
+Requisitos:
+- .NET 8 Runtime
+- mpv instalado
 
 ---
 
-# 📡 API Endpoints
+## 🔐 Autenticação
 
-## 🔹 Configuração do Device
-GET /device/{deviceId}/config
+```http
+Authorization: Bearer SEU_TOKEN
+```
 
-### Exemplo de resposta:
+Validação atual: simples (token fixo).
+
+---
+
+## 🌐 Endpoints
+
+### GET /equipamento/{deviceId}
+
+Retorna playlist.
+
+### GET /media/{nomeMidia}
+
+Retorna arquivo mp4.
+
+---
+
+## 📥 Sync de mídia
+
+- Cria /Videos
+- Baixa apenas novos arquivos
+- Usa streaming (baixo uso de memória)
+
+---
+
+## 🎥 Player
+
+```bash
+mpv --idle=yes --no-terminal --input-ipc-server=/tmp/mpvsocket
+```
+
+---
+
+## 🎮 IPC
+
 ```json
-{
-  "version": 1,
-  "media": [
-    {
-      "hash": "a",
-      "url": "http://localhost:5080/media/a.mp4",
-      "type": "video"
-    }
-  ],
-  "playlists": [
-    {
-      "id": "playlist-1",
-      "items": [
-        {
-          "mediaHash": "a",
-          "duration": 0
-        }
-      ]
-    }
-  ],
-  "schedule": [
-    {
-      "playlistId": "playlist-1",
-      "start": "00:00",
-      "end": "23:59",
-      "days": ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
-    }
-  ]
-}
+{ "command": ["loadfile", "video1.mp4", "replace"] }
 ```
 
 ---
 
-## 🎥 Download de Mídia
-GET /media/{fileName}
+## 📡 Fluxo
 
-Exemplo:
-http://localhost:5080/media/a.mp4
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant A as API
+    participant M as mpv
 
----
-
-# 📁 Estrutura do Projeto
-
-```
-AdLumeDash/
-│
-├── Controllers/
-│   ├── ConfigController.cs
-│   └── MediaController.cs
-│
-├── Models/
-├── Services/
-├── Repositories/
-├── DTOs/
-├── Storage/
-│
-└── Program.cs
+    C->>A: GET playlist
+    A-->>C: JSON
+    C->>A: download mídia
+    C->>M: atualiza playlist
 ```
 
 ---
 
-# ⚙️ Setup Inicial
+## 🚀 Roadmap
 
-## 1. Clonar o projeto
-```bash
-git clone https://github.com/seu-usuario/adlume.git
-cd adlume/AdLumeDash
-```
-
-## 2. Rodar a API
-```bash
-dotnet run
-```
-
-## 3. Acessar
-http://localhost:xxxx/device/{guid}/config
+- JWT completo  
+- Retry  
+- Paralelismo  
+- Hash check  
+- Docker  
 
 ---
 
-# 📦 Armazenamento de Mídia
+## 📦 Stack
 
-Arquivos são armazenados localmente em:
-
-/storage/{fileName}
-
-Exemplo:
-storage/a.mp4
+- .NET 8  
+- Serilog  
+- mpv  
 
 ---
 
-# 🔄 Fluxo do Client
+## 📄 Licença
 
-1. Faz polling no /config
-2. Verifica versão
-3. Baixa mídias novas
-4. Remove mídias antigas
-5. Monta playlist
-6. Executa via mpv
-
----
-
-# 🧠 Conceitos-Chave
-
-- Offline-first
-- Cache por hash
-- Config versionada
-- Execução desacoplada
-
----
-
-# 🚧 Roadmap
-
-## 🔹 Em andamento
-- [x] API base
-- [x] Endpoint de config
-- [x] Download de mídia
-- [x] Integração com player
-
-## 🔹 Próximos passos
-- [ ] Upload com hash (SHA-256)
-- [ ] Persistência em banco
-- [ ] Sincronização inteligente
-- [ ] Engine de schedule completo
-- [ ] Monitoramento de devices
-
----
-
-# 🎯 Objetivo do Projeto
-
-Criar uma solução simples, robusta e escalável para:
-
-Transformar qualquer TV em um canal automatizado de comunicação e monetização.
-
----
-
-# 👨‍💻 Autor
-
-Carlos Buosi  
-BBS Informática
-
----
-
-# 📜 Licença
-
-Uso privado/comercial (definir futuramente)
+Privado.
